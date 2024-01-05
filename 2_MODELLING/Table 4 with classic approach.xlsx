@@ -1,6 +1,0 @@
-,Model,R-squared,Significant Predictors,Remarks
-0,CAR Abs ~ Pessimism 2 (m1),0.015,Pessimism 2 (borderline),Pessimism 2 is borderline significant
-1,CAR Abs ~ Output Gap + Inflation + Change in MRO Rate (m2),0.017,Change in MRO Rate (borderline),Output Gap and Inflation not significant
-2,CAR Abs ~ Interaction (m3),0.017,Interaction,
-3,CAR Abs ~ Interaction + Output Gap + Inflation + Change in MRO Rate (m4),0.028,Interaction (borderline),"Output Gap and Inflation not significant, Change in MRO Rate borderline"
-4,CAR Abs ~ Interaction + Output Gap + Inflation + Pessimism 2 (m5),0.02,None,Interaction and Pessimism 2 not significant
