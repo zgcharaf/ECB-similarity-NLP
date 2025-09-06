@@ -1,43 +1,57 @@
-# ECB's monetary policy similarity NLP
+# ECB similarity Replication & Exentention
 
-1. Data Preparation
-Data Collection: Import ECB press conference statements from 1999 to 2013. If this data isn't readily available, you may need to scrape it from the ECB's website or find a suitable dataset.
-Preprocessing: Process the text data by converting to lowercase, removing stopwords, and employing stemming (using the Porter stemming algorithm).
-Tokenization: Convert text into tokens for further analysis.
-2. Textual Similarity Analysis
-Bigram Creation: Create bigrams from the tokenized text of the ECB statements.
-Jaccard Similarity: Calculate the Jaccard similarity between consecutive statements, based on the presence of bigrams.
-Trend Analysis: Perform a time-series analysis to examine the trend in similarity over the years.
-3. Financial Data Handling
-Data Collection: Gather data on the DJEurostoxx50 Index for the corresponding dates of ECB statements.
-Calculation of Returns: Compute daily returns and identify the abnormal returns around the announcement dates.
-Event Study Methodology: Implement the event study methodology to calculate cumulative abnormal returns (CAR).
-4. Market Reaction Analysis
-Sentiment Analysis: Apply a dictionary-based approach (Loughran and McDonald’s dictionary) to quantify the sentiment of ECB statements (positive, negative, and neutral terms).
-Regression Analysis: Conduct regression analyses to explore the relationship between the similarity of ECB statements, the sentiment, and the market's reaction (abnormal returns).
-5. Statistical Analysis
-Descriptive Statistics: Provide summaries of the data, such as mean, median, standard deviation, etc.
-Correlation Analysis: Examine the correlation between different variables such as sentiment, similarity, and market reaction.
-6. Visualization
-Trend Plots: Plot the trend of similarity over time.
-Correlation Matrices: Visualize the correlation between different variables.
-Regression Results: Graphically represent the results of regression analyses.
-7. Interpretation and Conclusion
-Discuss the results in the context of the ECB’s communication strategy.
-Compare your findings with those in the paper.
-Draw conclusions about the effectiveness of ECB communication on market learning.
-8. Documentation and Comments
-Throughout the code, include comments explaining each step.
-Document the assumptions, methodologies, and limitations.
-9. Testing and Validation
-Include tests to validate your results.
-Ensure reproducibility by properly managing and citing data sources.
-10. Optimization and Refinement
-Optimize the code for efficiency, especially if dealing with large datasets.
-Refine the analysis based on initial findings, possibly iterating over some of the earlier steps.
-Programming Tools and Libraries
-Python: Ideal for this type of analysis.
-Libraries: nltk for NLP tasks, pandas and numpy for data manipulation, matplotlib and seaborn for visualization, statsmodels or scikit-learn for regression analysis.
-Final Steps
-Review the code for accuracy and adherence to the methodologies used in the paper.
-Prepare a report or presentation to summarize the findings and methodologies
+* Project replicates ECB Introductory Statement text-similarity (1999–2023), linking communication to market reactions.
+* Methods: NLP (bigrams Jaccard, LM tone), statement-frequency ΔMRO, macro controls, HAC(6) errors, |CAR| over ±1/±3/±5/±7 days.
+* Pre-2014: similarity **increases** with time (convergence), consistent with more templated language.
+* Post-2014: similarity **declines** with time (greater novelty), robust to controls and standardization.
+* Market impact: tone×similarity **raises** absolute CAR post-2014 (notably at ±7d); tone alone is weak.
+* Controls: Output gap and inflation sometimes **dampen** |CAR| post-2014; ΔMRO levels/moves have limited incremental power.
+* Bottom line: ECB communication style shifted after 2014, and **tone + novelty** together move markets more than tone by itself.
+
+### Figure 1 — Statement similarity over time
+![Figure 1: ECB statement similarity (median Jaccard bigrams, quarterly)](7_GRAPHS/Similarity_Measure.png)
+
+### Figure 2 — Market reaction magnitude (|CAR|, ±5d, winsorized 1%)
+![Figure 2: |CAR| (±5 trading days), annual mean](7_GRAPHS/Pessimisim_measure.png)
+
+# Results (HAC(6), main |CAR| window ±5d, winsorized 1%)
+
+
+### Table 3 — Statement similarity vs time (Depvar: `logSimilarity`)
+
+| Sample        | Spec                 | Key regressor  |    Coef |   Sig  |   R²  |
+| ------------- | -------------------- | -------------- | ------: | :----: | :---: |
+| **1999–2023** | (1) baseline         | logTime_days   |   0.149 |        | 0.001 |
+|               | (2) + controls       | logTime_days   |  −0.122 |        | 0.047 |
+|               | (4) count + controls | logTime_count  |  −0.113 |        | 0.047 |
+| **1999–2013** | (1) baseline         | logTime_days   |   0.724 |  **★** | 0.055 |
+|               | (2) + controls       | logTime_days   |   0.426 |        | 0.071 |
+|               | (4) count + controls | logTime_count  |   0.488 |    ★   | 0.072 |
+| **2014–2023** | (1) baseline         | logTime_days   |  −8.489 | **★★** | 0.059 |
+|               | (2) + controls       | logTime_days   | −15.526 | **★★** | 0.109 |
+|               | (4) count + controls | logTime_count  | −20.498 | **★★** | 0.104 |
+
+**Takeaway:** Similarity **rose pre-2014** (convergence) but **fell post-2014** (greater novelty).
+
+---
+
+### Table 4 — Market impact (Depvar: `|CAR|_w`, ±5d)
+
+| Sample        | Spec                 | Regressor            |  Coef |   Sig  |   R²  |
+| ------------- | -------------------- | -------------------- | ----: | :----: | :---: |
+| **1999–2023** | (1) baseline         | pessimism            | 0.148 |        | 0.004 |
+|               | (3) interaction only | pessimism×similarity | 0.614 |        | 0.004 |
+|               | (4) + controls       | pessimism×similarity | 0.760 |    ★   | 0.034 |
+| **1999–2013** | (1) baseline         | pessimism            | 0.176 |        | 0.004 |
+|               | (3) interaction only | pessimism×similarity | 1.604 |        | 0.004 |
+|               | (4) + controls       | pessimism×similarity | 1.169 |        | 0.035 |
+| **2014–2023** | (1) baseline         | pessimism            | 0.296 |    ★   | 0.030 |
+|               | (3) interaction only | pessimism×similarity | 0.695 | **★★** | 0.020 |
+|               | (4) + controls       | pessimism×similarity | 0.816 | **★★** | 0.058 |
+
+**Window robustness (post-2014):**
+±1d: n.s. • ±3d: interaction n.s., **OutputGap −** (p≈.01) • **±7d: interaction +** (p≈.01), **OutputGap −**, **Inflation −**.
+
+**Legend:** ★ p<0.10, **★★ p<0.05** (HAC SEs).
+
+**Reference:** Amaya & Filbien (2015), *Journal of Financial Markets*. [ScienceDirect link](https://www.sciencedirect.com/science/article/pii/S1544612314000877)
