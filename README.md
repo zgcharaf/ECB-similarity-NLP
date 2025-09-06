@@ -1,4 +1,4 @@
-# ECB similarity Replication & Exentention
+# ECB similarity Research Paper Replication & Exentention
 
 * Project replicates ECB Introductory Statement text-similarity (1999–2023), linking communication to market reactions.
 * Methods: NLP (bigrams Jaccard, LM tone), statement-frequency ΔMRO, macro controls, HAC(6) errors, |CAR| over ±1/±3/±5/±7 days.
@@ -11,8 +11,9 @@
 ### Figure 1 — Statement similarity over time
 ![Figure 1: ECB statement similarity (median Jaccard bigrams, quarterly)](7_GRAPHS/Similarity_Measure.png)
 
-### Figure 2 — Market reaction magnitude (|CAR|, ±5d, winsorized 1%)
+### Figure 2 — The Pessimism measured using the Loughran-Mcdonald dictionnary.
 ![Figure 2: |CAR| (±5 trading days), annual mean](7_GRAPHS/Pessimisim_measure.png)
+
 
 # Results (HAC(6), main |CAR| window ±5d, winsorized 1%)
 
@@ -53,5 +54,32 @@
 ±1d: n.s. • ±3d: interaction n.s., **OutputGap −** (p≈.01) • **±7d: interaction +** (p≈.01), **OutputGap −**, **Inflation −**.
 
 **Legend:** ★ p<0.10, **★★ p<0.05** (HAC SEs).
+
+### How we measure **Similarity** and **Pessimism**
+
+**Similarity (statement-to-previous statement)**
+
+* Scope: only the *Introductory Statement* segment (Q\&A and boilerplate trimmed).
+* Preprocess: lowercase → strip punctuation → remove English stop-words → **Porter stemmer** → build token list.
+* Construct **bigrams** (pairs of consecutive tokens) and take set union per statement.
+* Compute **Jaccard similarity** vs the immediately preceding meeting:
+
+  $$
+  \text{sim}_t=\frac{|B_t \cap B_{t-1}|}{|B_t \cup B_{t-1}|}
+  $$
+* Use `logSimilarity = log(max(sim_t, 1e-9))` to stabilize tails for OLS.
+
+**Pessimism (tone of the statement)**
+
+* Tokens: same text segment, but **without stemming** (keeps dictionary words intact).
+* Dictionary: **Loughran–McDonald** finance lexicon (Positive/Negative lists).
+* Counts: `neg_t = #Negative words`, `pos_t = #Positive words`, `N_t = total tokens`.
+* Measure:
+
+  $$
+  \text{pessimism}_t = \frac{\text{neg}_t - \text{pos}_t}{N_t}
+  $$
+* Used directly and in the interaction **pessimism × similarity**; standardized (z-scored) in some specs.
+
 
 **Reference:** Amaya & Filbien (2015), *Journal of Financial Markets*. [ScienceDirect link](https://www.sciencedirect.com/science/article/pii/S1544612314000877)
