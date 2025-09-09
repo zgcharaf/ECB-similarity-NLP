@@ -1,7 +1,7 @@
 # ECB similarity Research Paper Replication & Exentention
 
 ### Terms : 
-CAR : Cumulative Abnormal or Excess returns
+CAR : Cumulative Abnormal or Excess returns of the MSCI Euro Index (EUR)
 
 ### Findings & Summary
 
