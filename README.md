@@ -1,5 +1,10 @@
 # ECB similarity Research Paper Replication & Exentention
 
+### Terms : 
+CAR : Cumulative Abnormal or Excess returns
+
+### Findings & Summary
+
 * Project replicates ECB Introductory Statement text-similarity (1999–2023), linking communication to market reactions.
 * Methods: NLP (bigrams Jaccard, LM tone), statement-frequency ΔMRO, macro controls, HAC(6) errors, |CAR| over ±1/±3/±5/±7 days.
 * Pre-2014: similarity **increases** with time (convergence), consistent with more templated language.
